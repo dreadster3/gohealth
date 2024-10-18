@@ -45,7 +45,7 @@ func (r HealthcheckReport) GetSectionsName() []string {
 }
 
 func (r HealthcheckReport) GetSection(section string) HealthcheckReport {
-	result := HealthcheckReport{}
+	result := NewHealthcheckReport()
 	for key, value := range r.Iter() {
 		if strings.HasPrefix(key, fmt.Sprintf("%s.", section)) {
 			key := strings.TrimPrefix(key, fmt.Sprintf("%s.", section))
@@ -57,7 +57,7 @@ func (r HealthcheckReport) GetSection(section string) HealthcheckReport {
 }
 
 func (r HealthcheckReport) GetIndividualCheckStatus() HealthcheckReport {
-	result := HealthcheckReport{}
+	result := NewHealthcheckReport()
 	for key, value := range r.Iter() {
 		if !strings.Contains(key, ".") {
 			result.Set(key, value)

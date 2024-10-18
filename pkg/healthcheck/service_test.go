@@ -16,9 +16,8 @@ func TestServiceRegister(t *testing.T) {
 		return healthcheck.HealthcheckStatusHealthy
 	})
 
-	expected := healthcheck.HealthcheckReport{
-		"test": healthcheck.HealthcheckStatusHealthy,
-	}
+	expected := healthcheck.NewHealthcheckReport()
+	expected.Set("test", healthcheck.HealthcheckStatusHealthy)
 
 	actual := service.Run(context.Background())
 
@@ -35,10 +34,9 @@ func TestServiceDynamicRegister(t *testing.T) {
 		return healthcheck.HealthcheckStatusHealthy
 	})
 
-	expected := healthcheck.HealthcheckReport{
-		"test":         healthcheck.HealthcheckStatusHealthy,
-		"test.subtest": healthcheck.HealthcheckStatusHealthy,
-	}
+	expected := healthcheck.NewHealthcheckReport()
+	expected.Set("test", healthcheck.HealthcheckStatusHealthy)
+	expected.Set("test.subtest", healthcheck.HealthcheckStatusHealthy)
 
 	actual := service.Run(context.Background())
 
