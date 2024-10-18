@@ -3,17 +3,23 @@ package healthcheck
 import (
 	"fmt"
 	"strings"
+
+	"github.com/dreadster3/gohealth/internal/concurrent_map"
 )
 
-type HealthcheckReport map[string]HealthcheckStatus
+type HealthcheckReport struct {
+	*concurrent_map.ConcurrentMap[string, HealthcheckStatus]
+}
 
 func NewHealthcheckReport() HealthcheckReport {
-	return HealthcheckReport{}
+	return HealthcheckReport{
+		concurrent_map.NewConcurrentMap[string, HealthcheckStatus](),
+	}
 }
 
 func (r HealthcheckReport) Status() HealthcheckStatus {
 	status := HealthcheckStatusHealthy
-	for _, value := range r {
+	for _, value := range r.Iter() {
 		if value == HealthcheckStatusUnhealthy {
 			return HealthcheckStatusUnhealthy
 		}
@@ -27,7 +33,7 @@ func (r HealthcheckReport) Status() HealthcheckStatus {
 
 func (r HealthcheckReport) GetSectionsName() []string {
 	result := []string{}
-	for key := range r {
+	for key := range r.Iter() {
 		splits := strings.Split(key, ".")
 
 		if len(splits) > 1 {
@@ -40,10 +46,10 @@ func (r HealthcheckReport) GetSectionsName() []string {
 
 func (r HealthcheckReport) GetSection(section string) HealthcheckReport {
 	result := HealthcheckReport{}
-	for key, value := range r {
+	for key, value := range r.Iter() {
 		if strings.HasPrefix(key, fmt.Sprintf("%s.", section)) {
 			key := strings.TrimPrefix(key, fmt.Sprintf("%s.", section))
-			result[key] = value
+			result.Set(key, value)
 		}
 	}
 
@@ -52,9 +58,9 @@ func (r HealthcheckReport) GetSection(section string) HealthcheckReport {
 
 func (r HealthcheckReport) GetIndividualCheckStatus() HealthcheckReport {
 	result := HealthcheckReport{}
-	for key, value := range r {
+	for key, value := range r.Iter() {
 		if !strings.Contains(key, ".") {
-			result[key] = value
+			result.Set(key, value)
 		}
 	}
 

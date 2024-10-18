@@ -27,7 +27,7 @@ func (s *HealthcheckService) Run(ctx context.Context) HealthcheckReport {
 		cancel()
 	}()
 
-	result := make(HealthcheckReport)
+	result := NewHealthcheckReport()
 	for {
 		select {
 		case <-ctx.Done():
@@ -35,7 +35,7 @@ func (s *HealthcheckService) Run(ctx context.Context) HealthcheckReport {
 		case h := <-s.queue.Chan():
 			go func() {
 				status := h.Run(ctx, NewHealthCheckExecutor(h.name, s.queue))
-				result[h.name] = status
+				result.Set(h.name, status)
 			}()
 		}
 	}

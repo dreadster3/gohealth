@@ -9,6 +9,8 @@ import (
 )
 
 func TestQueue(t *testing.T) {
+	t.Parallel()
+
 	queue := queue.NewWorkerQueue[int](100)
 
 	queue.Enqueue(10)
