@@ -1,10 +1,9 @@
-package pkg
+package healthcheck
 
 type HealthcheckStatus string
 
 const (
-	HealthcheckStatusHealthy   HealthcheckStatus = "healthy" 
+	HealthcheckStatusHealthy   HealthcheckStatus = "healthy"
 	HealthcheckStatusUnhealthy HealthcheckStatus = "unhealthy"
 	HealthcheckStatusDegraded  HealthcheckStatus = "degraded"
 )
-

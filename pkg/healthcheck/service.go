@@ -1,4 +1,4 @@
-package pkg
+package healthcheck
 
 import (
 	"context"
@@ -18,21 +18,25 @@ func (s *HealthcheckService) Register(name string, fn HealthcheckFn) {
 	s.queue.Enqueue(NewHealthcheck(name, fn))
 }
 
-func (s *HealthcheckService) Run(ctx context.Context) {
+func (s *HealthcheckService) Run(ctx context.Context) HealthcheckReport {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
 	go func() {
-		s.queue.waitGroup.Wait()
+		s.queue.Wait()
 		cancel()
 	}()
 
+	result := make(HealthcheckReport)
 	for {
 		select {
 		case <-ctx.Done():
-			return
-		case h := <-s.queue.queue:
-			go h.Run(NewHealthcheckContext(ctx, h.name, s.queue))
+			return result
+		case h := <-s.queue.Chan():
+			go func() {
+				status := h.Run(ctx, NewHealthCheckExecutor(h.name, s.queue))
+				result[h.name] = status
+			}()
 		}
 	}
 }
