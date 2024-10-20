@@ -1,6 +1,7 @@
 package healthcheck
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -65,4 +66,16 @@ func (r HealthcheckReport) GetIndividualCheckStatus() HealthcheckReport {
 	}
 
 	return result
+}
+
+func (r HealthcheckReport) MarshalJSON() ([]byte, error) {
+	result := struct {
+		Status   HealthcheckStatus                                        `json:"status"`
+		Services *concurrent_map.ConcurrentMap[string, HealthcheckStatus] `json:"services"`
+	}{
+		Status:   r.Status(),
+		Services: r.ConcurrentMap,
+	}
+
+	return json.Marshal(result)
 }

@@ -1,6 +1,7 @@
 package concurrent_map
 
 import (
+	"encoding/json"
 	"fmt"
 	"sync"
 )
@@ -64,4 +65,11 @@ func (m *ConcurrentMap[K, V]) String() string {
 	defer m.mu.RUnlock()
 
 	return fmt.Sprintf("%v", m.m)
+}
+
+func (m *ConcurrentMap[K, V]) MarshalJSON() ([]byte, error) {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+
+	return json.Marshal(m.m)
 }
