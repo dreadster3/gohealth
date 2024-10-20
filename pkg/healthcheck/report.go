@@ -12,6 +12,12 @@ type HealthcheckReport struct {
 	*concurrent_map.ConcurrentMap[string, HealthcheckStatus]
 }
 
+// JSONHealthcheckReport is a struct that represents the JSON output of a healthcheck report when JSON encoded.
+type JSONHealthcheckReport struct {
+	Status   HealthcheckStatus            `json:"status"`
+	Services map[string]HealthcheckStatus `json:"services"`
+}
+
 func NewHealthcheckReport() HealthcheckReport {
 	return HealthcheckReport{
 		concurrent_map.NewConcurrentMap[string, HealthcheckStatus](),
