@@ -1,6 +1,7 @@
 package healthcheck
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -9,6 +10,12 @@ import (
 
 type HealthcheckReport struct {
 	*concurrent_map.ConcurrentMap[string, HealthcheckStatus]
+}
+
+// JSONHealthcheckReport is a struct that represents the JSON output of a healthcheck report when JSON encoded.
+type JSONHealthcheckReport struct {
+	Status   HealthcheckStatus            `json:"status"`
+	Services map[string]HealthcheckStatus `json:"services"`
 }
 
 func NewHealthcheckReport() HealthcheckReport {
@@ -65,4 +72,16 @@ func (r HealthcheckReport) GetIndividualCheckStatus() HealthcheckReport {
 	}
 
 	return result
+}
+
+func (r HealthcheckReport) MarshalJSON() ([]byte, error) {
+	result := struct {
+		Status   HealthcheckStatus                                        `json:"status"`
+		Services *concurrent_map.ConcurrentMap[string, HealthcheckStatus] `json:"services"`
+	}{
+		Status:   r.Status(),
+		Services: r.ConcurrentMap,
+	}
+
+	return json.Marshal(result)
 }
