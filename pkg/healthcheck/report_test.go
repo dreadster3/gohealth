@@ -23,6 +23,27 @@ func TestReportGetSectionsName(t *testing.T) {
 	assert.Equal(t, expected, actual)
 }
 
+func TestReportGetSectionsNameDuplicates(t *testing.T) {
+	report := healthcheck.NewHealthcheckReport()
+
+	report.Set("section1.check1", healthcheck.HealthcheckStatusHealthy)
+	report.Set("section1.check2", healthcheck.HealthcheckStatusHealthy)
+	report.Set("section1.check3", healthcheck.HealthcheckStatusHealthy)
+	report.Set("section2.check1", healthcheck.HealthcheckStatusHealthy)
+	report.Set("section2.check2", healthcheck.HealthcheckStatusHealthy)
+	report.Set("section2.check3", healthcheck.HealthcheckStatusHealthy)
+	report.Set("section3.check1", healthcheck.HealthcheckStatusHealthy)
+	report.Set("section3.check2", healthcheck.HealthcheckStatusHealthy)
+	report.Set("section3.check3", healthcheck.HealthcheckStatusHealthy)
+
+	expected := []string{"section1", "section2", "section3"}
+	actual := report.GetSectionsName()
+
+	sort.Strings(actual)
+
+	assert.Equal(t, expected, actual)
+}
+
 func TestReportGetSection(t *testing.T) {
 	report := healthcheck.NewHealthcheckReport()
 
