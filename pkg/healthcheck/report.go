@@ -3,6 +3,8 @@ package healthcheck
 import (
 	"encoding/json"
 	"fmt"
+	"maps"
+	"slices"
 	"strings"
 
 	"github.com/dreadster3/gohealth/internal/concurrent_map"
@@ -39,16 +41,16 @@ func (r HealthcheckReport) Status() HealthcheckStatus {
 }
 
 func (r HealthcheckReport) GetSectionsName() []string {
-	result := []string{}
+	result := map[string]bool{}
 	for key := range r.Iter() {
 		splits := strings.Split(key, ".")
 
 		if len(splits) > 1 {
-			result = append(result, splits[0])
+			result[splits[0]] = true
 		}
 	}
 
-	return result
+	return slices.Collect(maps.Keys(result))
 }
 
 func (r HealthcheckReport) GetSection(section string) HealthcheckReport {
